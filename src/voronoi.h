@@ -42,8 +42,8 @@ public:
     void add_point(Vector3 point);
     void voronoi();
 
-    Voronoi();
-    ~Voronoi();
+    Voronoi(){};
+    ~Voronoi(){};
 
 };
 #endif // ! VORONOI_CLASS_H
