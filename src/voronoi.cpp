@@ -57,8 +57,13 @@ void Voronoi::voronoi() {
 	
 }
 
+PackedVector3Array Voronoi::get_face(int frag, int face) {
+	return frags[frag][face];
+}
+
 void Voronoi::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("setup"), &Voronoi::setup);
 	ClassDB::bind_method(D_METHOD("add_point", "point"), &Voronoi::add_point);
 	ClassDB::bind_method(D_METHOD("voronoi"), &Voronoi::voronoi);
+	ClassDB::bind_method(D_METHOD("get_face", "fragment", "face"), &Voronoi::get_face);
 }

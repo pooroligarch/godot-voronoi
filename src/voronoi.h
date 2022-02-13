@@ -41,9 +41,10 @@ public:
     void setup(real_t x_min, real_t x_max, real_t y_min, real_t y_max, real_t z_min, real_t z_max);
     void add_point(Vector3 point);
     void voronoi();
+    PackedVector3Array get_face(int frag, int face);
 
     Voronoi(){};
-    ~Voronoi(){};
+    ~Voronoi() = default;
 
 };
 #endif // ! VORONOI_CLASS_H
