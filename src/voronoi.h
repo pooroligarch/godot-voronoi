@@ -14,6 +14,7 @@
 #include <godot_cpp/classes/global_constants.hpp>
 #include <godot_cpp/classes/ref_counted.hpp>
 #include <godot_cpp/variant/vector3.hpp>
+#include <godot_cpp/variant/packed_vector3_array.hpp>
 
 #include <godot_cpp/core/binder_common.hpp>
 #include <godot_cpp/core/class_db.hpp>
@@ -21,7 +22,7 @@
 using namespace godot;
 
 class Voronoi : public RefCounted {
-GDCLASS(Voronoi, RefCounted)
+    GDCLASS(Voronoi, RefCounted);
 
 protected:
     static void _bind_methods();
