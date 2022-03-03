@@ -32,7 +32,7 @@ void Voronoi::voronoi() {
 	voro::c_loop_all loop(con);
 	voro::voronoicell cell;
 
-	if(loop.start()) do {	
+	if(loop.start()) do if(con.compute_cell(cell, loop)) {	
 
 			std::vector<PackedVector3Array> frag; // frag[face[vertex]]
 
