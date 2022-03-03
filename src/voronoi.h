@@ -13,8 +13,10 @@
 
 #include <godot_cpp/classes/global_constants.hpp>
 #include <godot_cpp/classes/ref_counted.hpp>
+
 #include <godot_cpp/variant/vector3.hpp>
 #include <godot_cpp/variant/packed_vector3_array.hpp>
+#include <godot_cpp/variant/utility_functions.hpp>
 
 #include <godot_cpp/core/binder_common.hpp>
 #include <godot_cpp/core/class_db.hpp>
@@ -39,10 +41,12 @@ private:
     double z_max;
 
 public:
-    void setup(real_t x_min, real_t x_max, real_t y_min, real_t y_max, real_t z_min, real_t z_max);
+    void setup(Vector3 min, Vector3 max);
     void add_point(Vector3 point);
     void voronoi();
     PackedVector3Array get_face(int frag, int face);
+    int get_num_frags();
+    int get_num_faces(int frag_idx);
 
     Voronoi(){};
     ~Voronoi() = default;

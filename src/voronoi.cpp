@@ -1,13 +1,13 @@
 
 #include "voronoi.h"
 
-void Voronoi::setup(real_t x_min, real_t x_max, real_t y_min, real_t y_max, real_t z_min, real_t z_max) {
-	this->x_min = x_min;
-	this->x_max = x_max;
-	this->y_min = y_min;
-	this->y_max = y_max;
-	this->z_min = z_min;
-	this->z_max = z_max;
+void Voronoi::setup(Vector3 min, Vector3 max) {
+	x_min = min.x;
+	x_max = max.x;
+	y_min = min.y;
+	y_max = max.y;
+	z_min = min.z;
+	z_max = max.z;
 }
 
 void Voronoi::add_point(Vector3 point) {
@@ -17,41 +17,45 @@ void Voronoi::add_point(Vector3 point) {
 void Voronoi::voronoi() {
 
 	int nx = 0, ny = 0, nz = 0;
-	voro::pre_container pre(x_min, x_max, y_min, y_max, z_min, z_max, false, false, false);
+	double dx = x_max - x_min, dy = y_max - y_min, dz = z_max - z_min;
+	double ilscale = pow(points.size()/(5.6*dx*dy*dz), 1/3.0); // "borrowed" from voro++ because pre_container is broken
+	nx = int(dx * ilscale + 1);
+	ny = int(dy * ilscale + 1);
+	nz = int(dz * ilscale + 1);
+
 	voro::container con(x_min, x_max, y_min, y_max, z_min, z_max, nx, ny, nz, false, false, false, 8);
 
 	for (int i = 0; i < points.size(); i++) { // Work around voro++ not allowing assignments to containers
-		Vector3 &v = points[i];
-		pre.put(i, v.x, v.y, v.z);
+		con.put(i, points[i].x, points[i].y, points[i].z);
 	}
-	// Create a container from the object's pre_container
-
-	pre.setup(con);
 
 	voro::c_loop_all loop(con);
 	voro::voronoicell cell;
 
-	if(loop.start()) do if(con.compute_cell(cell, loop)) {	
-			int i = 0; // current face
+	if(loop.start()) do {	
 
-			std::vector<PackedVector3Array> faces; // faces[face[vertex]]
+			std::vector<PackedVector3Array> frag; // frag[face[vertex]]
 
             std::vector<int> fverts;
 			std::vector<double> verts;
+			PackedVector3Array face;
 
 			cell.face_vertices(fverts);
 			cell.vertices(verts);
 
-			for (int j = 0; j < sizeof(fverts); j++) {	
+			for (int j = 0; j < fverts.size(); j++) {	
+
 				if (fverts[j] == 0) {
-					i++;
+					frag.push_back(face);
+					j += 2;
+
 				} else {
-				// Store the vertex positions as Vector3 into the fragment
-				faces[i].push_back(Vector3(verts[fverts[j]*3], verts[fverts[j]*3 + 1], verts[fverts[j]*3 + 2]));
+					// Store vertex positions into the face
+					face.push_back(Vector3(verts[fverts[j]*3], verts[fverts[j]*3 + 1], verts[fverts[j]*3 + 2]));
 				}
 			}
 
-			frags.push_back(faces);
+			frags.push_back(frag);
 
      } while (loop.inc());
 	
@@ -61,9 +65,19 @@ PackedVector3Array Voronoi::get_face(int frag, int face) {
 	return frags[frag][face];
 }
 
+int Voronoi::get_num_frags() {
+	return frags.size();
+}
+
+int Voronoi::get_num_faces(int frag_idx) {
+	return frags[frag_idx].size();
+}
+
 void Voronoi::_bind_methods() {
-	ClassDB::bind_method(D_METHOD("setup", "x_min", "x_max", "y_min", "y_max", "z_min", "z_max"), &Voronoi::setup);
+	ClassDB::bind_method(D_METHOD("setup", "min", "max"), &Voronoi::setup);
 	ClassDB::bind_method(D_METHOD("add_point", "point"), &Voronoi::add_point);
 	ClassDB::bind_method(D_METHOD("voronoi"), &Voronoi::voronoi);
 	ClassDB::bind_method(D_METHOD("get_face", "fragment", "face"), &Voronoi::get_face);
+	ClassDB::bind_method(D_METHOD("get_num_frags"), &Voronoi::get_num_frags);
+	ClassDB::bind_method(D_METHOD("get_num_faces", "frag"), &Voronoi::get_num_faces);
 }
