@@ -14,7 +14,15 @@ void Voronoi::add_point(Vector3 point) {
 	points.push_back(point);
 }
 
-void Voronoi::voronoi() {
+void Voronoi::set_points(PackedVector3Array array) {
+	points = array;
+}
+
+PackedVector3Array Voronoi::get_points() {
+	return points;
+}
+
+void Voronoi::compute() {
 
 	int nx = 0, ny = 0, nz = 0;
 	double dx = x_max - x_min, dy = y_max - y_min, dz = z_max - z_min;
@@ -34,7 +42,7 @@ void Voronoi::voronoi() {
 
 	if(loop.start()) do if(con.compute_cell(cell, loop)) {	
 
-			std::vector<PackedVector3Array> frag; // frag[face[vertex]]
+			Vector<PackedVector3Array> frag; // frag[face[vertex]]
 
             std::vector<int> fverts;
 			std::vector<double> verts;
@@ -43,16 +51,19 @@ void Voronoi::voronoi() {
 			cell.face_vertices(fverts);
 			cell.vertices(verts);
 
-			for (int j = 0; j < fverts.size(); j++) {	
+			int n = fverts[0]; // number of points in face
 
-				if (fverts[j] == 0) {
+			for (int j = 1; j < fverts.size(); j++) {	
+
+				if (n == 0) {
 					frag.push_back(face);
-					j += 2;
+					n = fverts[j];
 
 				} else {
 					// Store vertex positions into the face
 					face.push_back(Vector3(verts[fverts[j]*3], verts[fverts[j]*3 + 1], verts[fverts[j]*3 + 2]));
 				}
+				n--;
 			}
 
 			frags.push_back(frag);
@@ -63,7 +74,15 @@ void Voronoi::voronoi() {
 
 PackedVector3Array Voronoi::get_face(int frag, int face) {
 	return frags[frag][face];
+} 
+
+/*Vector<PackedVector3Array> Voronoi::get_frag(int frag) {
+	return frags[frag];
 }
+
+void Voronoi::set_frag(const Vector<PackedVector3Array> &value, int frag) {
+	frags[frag] = value;
+}*/
 
 int Voronoi::get_num_frags() {
 	return frags.size();
@@ -76,8 +95,13 @@ int Voronoi::get_num_faces(int frag_idx) {
 void Voronoi::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("setup", "min", "max"), &Voronoi::setup);
 	ClassDB::bind_method(D_METHOD("add_point", "point"), &Voronoi::add_point);
-	ClassDB::bind_method(D_METHOD("voronoi"), &Voronoi::voronoi);
+	ClassDB::bind_method(D_METHOD("get_points"), &Voronoi::get_points);
+	ClassDB::bind_method(D_METHOD("set_points", "points"), &Voronoi::set_points);
+
+	ClassDB::bind_method(D_METHOD("compute"), &Voronoi::compute);
 	ClassDB::bind_method(D_METHOD("get_face", "fragment", "face"), &Voronoi::get_face);
 	ClassDB::bind_method(D_METHOD("get_num_frags"), &Voronoi::get_num_frags);
 	ClassDB::bind_method(D_METHOD("get_num_faces", "frag"), &Voronoi::get_num_faces);
+
+	ADD_PROPERTY(PropertyInfo(Variant::PACKED_VECTOR3_ARRAY, "points"), "set_points", "get_points");
 }

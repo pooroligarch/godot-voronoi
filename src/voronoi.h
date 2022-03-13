@@ -7,8 +7,6 @@
 #include <windows.h>
 #endif
 
-#include <vector>
-
 #include "voro/src/voro++.hh"
 
 #include <godot_cpp/classes/global_constants.hpp>
@@ -21,16 +19,19 @@
 #include <godot_cpp/core/binder_common.hpp>
 #include <godot_cpp/core/class_db.hpp>
 
+#include <godot_cpp/templates/vector.hpp>
+
 using namespace godot;
 
 class Voronoi : public RefCounted {
     GDCLASS(Voronoi, RefCounted);
 
 protected:
+
     static void _bind_methods();
 
 private:
-    std::vector<std::vector<PackedVector3Array>> frags;
+    
     PackedVector3Array points;
     int particle_id;
     double x_min;
@@ -41,9 +42,14 @@ private:
     double z_max;
 
 public:
+    Vector<Vector<PackedVector3Array>> frags;
+
     void setup(Vector3 min, Vector3 max);
     void add_point(Vector3 point);
-    void voronoi();
+    void set_points(PackedVector3Array array);
+    PackedVector3Array get_points();
+
+    void compute();
     PackedVector3Array get_face(int frag, int face);
     int get_num_frags();
     int get_num_faces(int frag_idx);
