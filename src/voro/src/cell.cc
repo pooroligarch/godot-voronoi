@@ -1976,6 +1976,34 @@ void voronoicell_base::draw_gnuplot(double x,double y,double z,FILE *fp) {
 	reset_edges();
 }
 
+/** Outputs the edges of the Voronoi cell in gnuplot format to an output stream.
+ * \param[in] (x,y,z) a displacement vector to be added to the cell's position.
+ * \param[in] v a std::vector to write to. */
+void voronoicell_base::draw_gnuplot(double x,double y,double z,std::vector<std::vector<double>> &v) {
+	int i,j,k,l,m,n=0;
+	for(i=1;i<p;i++) for(j=0;j<nu[i];j++) {
+		k=ed[i][j];
+		if(k>=0) {
+			v[n].push_back(x+0.5*pts[i<<2]);
+			v[n].push_back(y+0.5*pts[i<<2+1]);
+			v[n].push_back(z+0.5*pts[(i<<2)+2]);
+
+			l=i;m=j;
+			do {
+				ed[k][ed[l][nu[l]+m]]=-1-l;
+				ed[l][m]=-1-k;
+				l=k;
+
+				v[n].push_back(x+0.5*pts[k<<2]);
+				v[n].push_back(y+0.5*pts[k<<2+1]);
+				v[n].push_back(z+0.5*pts[(k<<2)+2]);
+			} while (search_edge(l,m,k));
+			n++;
+		}
+	}
+	reset_edges();
+}
+
 inline bool voronoicell_base::search_edge(int l,int &m,int &k) {
 	for(m=0;m<nu[l];m++) {
 		k=ed[l][m];

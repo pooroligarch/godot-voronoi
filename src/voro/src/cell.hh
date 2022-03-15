@@ -118,6 +118,7 @@ class voronoicell_base {
 			fclose(fp);
 		}
 		void draw_gnuplot(double x,double y,double z,FILE *fp=stdout);
+		void draw_gnuplot(double x,double y,double z,std::vector<std::vector<double>> &v);
 		/** Outputs the cell in Gnuplot format a given file.
 		 * \param[in] (x,y,z) a displacement to add to the cell's
 		 *                    position.

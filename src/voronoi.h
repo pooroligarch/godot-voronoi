@@ -49,7 +49,7 @@ public:
     void set_points(PackedVector3Array array);
     PackedVector3Array get_points();
 
-    void compute();
+    void compute(Vector3 dp = Vector3(0, 0, 0));
     PackedVector3Array get_face(int frag, int face);
     int get_num_frags();
     int get_num_faces(int frag_idx);

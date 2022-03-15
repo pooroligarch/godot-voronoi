@@ -22,7 +22,9 @@ PackedVector3Array Voronoi::get_points() {
 	return points;
 }
 
-void Voronoi::compute() {
+/** Computes the Voronoi tessellation and stores the results.
+ * \param[in] dp a displacement vector to be added to the resulting positions. */
+void Voronoi::compute(Vector3 dp) {
 
 	int nx = 0, ny = 0, nz = 0;
 	double dx = x_max - x_min, dy = y_max - y_min, dz = z_max - z_min;
@@ -48,27 +50,41 @@ void Voronoi::compute() {
 			std::vector<double> verts;
 			PackedVector3Array face;
 
-			cell.face_vertices(fverts);
-			cell.vertices(verts);
+			std::vector<std::vector<double>> positions;
+
+			cell.draw_gnuplot(dp.x, dp.y, dp.z, positions);
 
 			int n = fverts[0]; // number of points in face
 
-			for (int j = 1; j < fverts.size(); j++) {	
+			//char str[10];
+
+			for (int j = 0; j < positions.size(); j++) {
+				for (int k = 0; k < positions[j].size(); k += 3) {
+					face.push_back(Vector3(positions[j][k], positions[j][k+1], positions[j][k+2]));
+				}
+				frag.push_back(face);
+			}
+
+			/*for (int j = 1; j < fverts.size(); j++) {	
 
 				if (n == 0) {
 					frag.push_back(face);
 					n = fverts[j];
+					itoa(n, str, 10);
+					WARN_PRINT(str);
 
 				} else {
 					// Store vertex positions into the face
 					face.push_back(Vector3(verts[fverts[j]*3], verts[fverts[j]*3 + 1], verts[fverts[j]*3 + 2]));
 				}
 				n--;
-			}
+			}*/
 
 			frags.push_back(frag);
 
      } while (loop.inc());
+	 con.draw_particles("random_points_p.gnu");
+	 con.draw_cells_gnuplot("random_points_v.gnu");
 	
 }
 
@@ -98,7 +114,7 @@ void Voronoi::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_points"), &Voronoi::get_points);
 	ClassDB::bind_method(D_METHOD("set_points", "points"), &Voronoi::set_points);
 
-	ClassDB::bind_method(D_METHOD("compute"), &Voronoi::compute);
+	ClassDB::bind_method(D_METHOD("compute", "displacement"), &Voronoi::compute);
 	ClassDB::bind_method(D_METHOD("get_face", "fragment", "face"), &Voronoi::get_face);
 	ClassDB::bind_method(D_METHOD("get_num_frags"), &Voronoi::get_num_frags);
 	ClassDB::bind_method(D_METHOD("get_num_faces", "frag"), &Voronoi::get_num_faces);
