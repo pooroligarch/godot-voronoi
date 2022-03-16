@@ -1980,13 +1980,14 @@ void voronoicell_base::draw_gnuplot(double x,double y,double z,FILE *fp) {
  * \param[in] (x,y,z) a displacement vector to be added to the cell's position.
  * \param[in] v a std::vector to write to. */
 void voronoicell_base::draw_gnuplot(double x,double y,double z,std::vector<std::vector<double>> &v) {
-	int i,j,k,l,m,n=0;
+	int i,j,k,l,m;
+	std::vector<double> w;
 	for(i=1;i<p;i++) for(j=0;j<nu[i];j++) {
 		k=ed[i][j];
 		if(k>=0) {
-			v[n].push_back(x+0.5*pts[i<<2]);
-			v[n].push_back(y+0.5*pts[i<<2+1]);
-			v[n].push_back(z+0.5*pts[(i<<2)+2]);
+			w.push_back(x+0.5*pts[i<<2]);
+			w.push_back(y+0.5*pts[(i<<2)+1]);
+			w.push_back(z+0.5*pts[(i<<2)+2]);
 
 			l=i;m=j;
 			do {
@@ -1994,11 +1995,12 @@ void voronoicell_base::draw_gnuplot(double x,double y,double z,std::vector<std::
 				ed[l][m]=-1-k;
 				l=k;
 
-				v[n].push_back(x+0.5*pts[k<<2]);
-				v[n].push_back(y+0.5*pts[k<<2+1]);
-				v[n].push_back(z+0.5*pts[(k<<2)+2]);
+				w.push_back(x+0.5*pts[k<<2]);
+				w.push_back(y+0.5*pts[(k<<2)+1]);
+				w.push_back(z+0.5*pts[(k<<2)+2]);
 			} while (search_edge(l,m,k));
-			n++;
+			v.push_back(w);
+			w.clear();
 		}
 	}
 	reset_edges();
