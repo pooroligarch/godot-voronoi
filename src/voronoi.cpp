@@ -62,6 +62,8 @@ void Voronoi::compute() {
 					face.push_back(Vector3(real_t(positions[j][k]), real_t(positions[j][k+1]), real_t(positions[j][k+2])));
 				}
 				frag.push_back(face);
+				face = PackedVector3Array();
+				WARN_PRINT("new face");
 			}
 
 			/*for (int j = 1; j < fverts.size(); j++) {	

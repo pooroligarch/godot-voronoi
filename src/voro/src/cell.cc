@@ -1962,13 +1962,17 @@ void voronoicell_base::draw_gnuplot(double x,double y,double z,FILE *fp) {
 	for(i=1;i<p;i++) for(j=0;j<nu[i];j++) {
 		k=ed[i][j];
 		if(k>=0) {
-			fprintf(fp,"%g %g %g\n",x+0.5*pts[i<<2],y+0.5*pts[(i<<2)+1],z+0.5*pts[(i<<2)+2]);
+			fprintf(fp,"%g ", x+0.5*pts[i<<2]);
+			fprintf(fp,"%g ", y+0.5*pts[(i<<2)+1]);
+			fprintf(fp,"%g\n", z+0.5*pts[(i<<2)+2]);
 			l=i;m=j;
 			do {
 				ed[k][ed[l][nu[l]+m]]=-1-l;
 				ed[l][m]=-1-k;
 				l=k;
-				fprintf(fp,"%g %g %g\n",x+0.5*pts[k<<2],y+0.5*pts[(k<<2)+1],z+0.5*pts[(k<<2)+2]);
+				fprintf(fp,"%g ", x+0.5*pts[k<<2]);
+				fprintf(fp,"%g ", y+0.5*pts[(k<<2)+1]);
+				fprintf(fp,"%g\n", z+0.5*pts[(k<<2)+2]);
 			} while (search_edge(l,m,k));
 			fputs("\n\n",fp);
 		}

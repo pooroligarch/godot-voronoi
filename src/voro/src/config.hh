@@ -11,6 +11,7 @@
 #define VOROPP_CONFIG_HH
 
 #include <limits>
+#include "godot_defs.hh"
 
 namespace voro {
 
