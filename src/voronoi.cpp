@@ -38,7 +38,7 @@ void Voronoi::compute() {
 		con.put(i, points[i].x, points[i].y, points[i].z);
 	}
 
-	voro::c_loop_all loop(con);
+	/*voro::c_loop_all loop(con);
 	voro::voronoicell cell;
 
 	if(loop.start()) do if(con.compute_cell(cell, loop)) {	
@@ -66,7 +66,7 @@ void Voronoi::compute() {
 				WARN_PRINT("new face");
 			}
 
-			/*for (int j = 1; j < fverts.size(); j++) {	
+			for (int j = 1; j < fverts.size(); j++) {
 
 				if (n == 0) {
 					frag.push_back(face);
@@ -79,13 +79,14 @@ void Voronoi::compute() {
 					face.push_back(Vector3(verts[fverts[j]*3], verts[fverts[j]*3 + 1], verts[fverts[j]*3 + 2]));
 				}
 				n--;
-			}*/
+			}
 
 			frags.push_back(frag);
 
-     } while (loop.inc());
-	 con.draw_particles("random_points_p.gnu");
-	 con.draw_cells_gnuplot("random_points_v.gnu");
+     } while (loop.inc());*/
+	 //con.draw_particles("random_points_p.gnu");
+	 //con.draw_cells_gnuplot("random_points_v.gnu");
+	 con.print_custom("%q;%P;%t","voronoi.out");
 	
 }
 
