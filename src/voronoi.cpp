@@ -38,7 +38,7 @@ void Voronoi::compute() {
 		con.put(i, points[i].x, points[i].y, points[i].z);
 	}
 
-	/*voro::c_loop_all loop(con);
+	voro::c_loop_all loop(con);
 	voro::voronoicell cell;
 
 	if(loop.start()) do if(con.compute_cell(cell, loop)) {	
@@ -47,15 +47,21 @@ void Voronoi::compute() {
 
 			PackedVector3Array face;
 
-			std::vector<std::vector<double>> positions;
+			std::vector<int> fverts;
+			std::vector<double> verts;
 
-			cell.draw_gnuplot(0, 0, 0, positions);
+			//std::vector<std::vector<double>> positions;
+
+			//cell.draw_gnuplot(0, 0, 0, positions);
 
 			//int n = fverts[0]; // number of points in face
 
+			cell.face_vertices(fverts);
+			cell.vertices(verts);
+
 			char str[30];
 
-			for (int j = 0; j < positions.size(); j++) { // face
+			/*for (int j = 0; j < positions.size(); j++) { // face
 				for (int k = 0; k < positions[j].size(); k += 3) { // vertex
 					std::sprintf(str, "%g %g %g\n", positions[j][k], positions[j][k+1], positions[j][k+2]);
 					WARN_PRINT(str);
@@ -64,14 +70,16 @@ void Voronoi::compute() {
 				frag.push_back(face);
 				face = PackedVector3Array();
 				WARN_PRINT("new face");
-			}
+			}*/
+			
+			int n = fverts[0];
 
 			for (int j = 1; j < fverts.size(); j++) {
 
 				if (n == 0) {
 					frag.push_back(face);
 					n = fverts[j];
-					itoa(n, str, 10);
+					std::sprintf(str, "%d", n);
 					WARN_PRINT(str);
 
 				} else {
@@ -83,10 +91,11 @@ void Voronoi::compute() {
 
 			frags.push_back(frag);
 
-     } while (loop.inc());*/
+     } while (loop.inc());
 	 //con.draw_particles("random_points_p.gnu");
 	 //con.draw_cells_gnuplot("random_points_v.gnu");
-	 con.print_custom("%q;%P;%t","voronoi.out");
+
+	 //con.print_custom("%q;%P;%t","voronoi.out");
 	
 }
 
