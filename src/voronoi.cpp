@@ -59,8 +59,6 @@ void Voronoi::compute() {
 			cell.face_vertices(fverts);
 			cell.vertices(verts);
 
-			char str[30];
-
 			/*for (int j = 0; j < positions.size(); j++) { // face
 				for (int k = 0; k < positions[j].size(); k += 3) { // vertex
 					std::sprintf(str, "%g %g %g\n", positions[j][k], positions[j][k+1], positions[j][k+2]);
@@ -79,8 +77,6 @@ void Voronoi::compute() {
 				if (n == 0) {
 					frag.push_back(face);
 					n = fverts[j];
-					std::sprintf(str, "%d", n);
-					WARN_PRINT(str);
 
 				} else {
 					// Store vertex positions into the face
