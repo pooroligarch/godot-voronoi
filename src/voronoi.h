@@ -42,7 +42,8 @@ private:
     double z_max;
 
 public:
-    Vector<Vector<PackedVector3Array>> frags;
+
+    std::vector<std::vector<PackedVector3Array>> frags;
 
     void setup(Vector3 min, Vector3 max);
     void add_point(Vector3 point);

@@ -43,7 +43,7 @@ void Voronoi::compute() {
 
 	if(loop.start()) do if(con.compute_cell(cell, loop)) {	
 
-			Vector<PackedVector3Array> frag; // frag[face[vertex]]
+			std::vector<PackedVector3Array> frag; // frag[face[vertex]]
 
 			PackedVector3Array face;
 
