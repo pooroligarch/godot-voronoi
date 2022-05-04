@@ -41,46 +41,41 @@ void Voronoi::compute() {
 	voro::c_loop_all loop(con);
 	voro::voronoicell cell;
 
+	char str[30];
+
 	if(loop.start()) do if(con.compute_cell(cell, loop)) {	
 
 			std::vector<PackedVector3Array> frag; // frag[face[vertex]]
 
-			PackedVector3Array face;
-
 			std::vector<int> fverts;
 			std::vector<double> verts;
-
-			//std::vector<std::vector<double>> positions;
-
-			//cell.draw_gnuplot(0, 0, 0, positions);
-
-			//int n = fverts[0]; // number of points in face
+			PackedVector3Array face;
 
 			cell.face_vertices(fverts);
 			cell.vertices(verts);
 
-			/*for (int j = 0; j < positions.size(); j++) { // face
-				for (int k = 0; k < positions[j].size(); k += 3) { // vertex
-					std::sprintf(str, "%g %g %g\n", positions[j][k], positions[j][k+1], positions[j][k+2]);
-					WARN_PRINT(str);
-					face.push_back(Vector3(real_t(positions[j][k]), real_t(positions[j][k+1]), real_t(positions[j][k+2])));
-				}
-				frag.push_back(face);
-				face = PackedVector3Array();
-				WARN_PRINT("new face");
-			}*/
+			real_t x;
+			real_t y;
+			real_t z;
 			
-			int n = fverts[0];
+			int n = fverts[0]; // number of points in face
 
 			for (int j = 1; j < fverts.size(); j++) {
 
 				if (n == 0) {
-					frag.push_back(face);
+					frag.push_back(face.duplicate());
+					//face = PackedVector3Array();
 					n = fverts[j];
 
 				} else {
+					x = verts[fverts[j]*3];
+					y = verts[fverts[j]*3 + 1];
+					z = verts[fverts[j]*3 + 2];
+
+					std::sprintf(str, "%g %g %g\n", x, y, z);
+					WARN_PRINT(str);
 					// Store vertex positions into the face
-					face.push_back(Vector3(verts[fverts[j]*3], verts[fverts[j]*3 + 1], verts[fverts[j]*3 + 2]));
+					face.push_back(Vector3(x, y, z));
 				}
 				n--;
 			}
@@ -88,10 +83,6 @@ void Voronoi::compute() {
 			frags.push_back(frag);
 
      } while (loop.inc());
-	 //con.draw_particles("random_points_p.gnu");
-	 //con.draw_cells_gnuplot("random_points_v.gnu");
-
-	 //con.print_custom("%q;%P;%t","voronoi.out");
 	
 }
 
@@ -99,13 +90,6 @@ PackedVector3Array Voronoi::get_face(int frag, int face) {
 	return frags[frag][face];
 } 
 
-/*Vector<PackedVector3Array> Voronoi::get_frag(int frag) {
-	return frags[frag];
-}
-
-void Voronoi::set_frag(const Vector<PackedVector3Array> &value, int frag) {
-	frags[frag] = value;
-}*/
 
 int Voronoi::get_num_frags() {
 	return frags.size();
