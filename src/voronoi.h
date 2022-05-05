@@ -40,20 +40,19 @@ private:
     double y_max;
     double z_min;
     double z_max;
+    // True if points modified since last compute()
+    bool dirty = false;
 
 public:
 
-    std::vector<std::vector<PackedVector3Array>> frags;
+    PackedVector3Array frags;
 
     void setup(Vector3 min, Vector3 max);
     void add_point(Vector3 point);
     void set_points(PackedVector3Array array);
     PackedVector3Array get_points();
 
-    void compute();
-    PackedVector3Array get_face(int frag, int face);
-    int get_num_frags();
-    int get_num_faces(int frag_idx);
+    PackedVector3Array compute();
 
     Voronoi(){};
     ~Voronoi() = default;

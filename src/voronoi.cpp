@@ -1,5 +1,6 @@
 
 #include "voronoi.h"
+#define EPSILON 1.19e-07
 
 void Voronoi::setup(Vector3 min, Vector3 max) {
 	x_min = min.x;
@@ -12,10 +13,12 @@ void Voronoi::setup(Vector3 min, Vector3 max) {
 
 void Voronoi::add_point(Vector3 point) {
 	points.push_back(point);
+	dirty = true;
 }
 
 void Voronoi::set_points(PackedVector3Array array) {
 	points = array;
+	dirty = true;
 }
 
 PackedVector3Array Voronoi::get_points() {
@@ -23,7 +26,11 @@ PackedVector3Array Voronoi::get_points() {
 }
 
 /** Computes the Voronoi tessellation and stores the results. */
-void Voronoi::compute() {
+PackedVector3Array Voronoi::compute() {
+	if (!dirty && frags.size() != 0) {
+		return frags;
+	}
+	WARN_PRINT("frags size checked");
 
 	int nx = 0, ny = 0, nz = 0;
 	double dx = x_max - x_min, dy = y_max - y_min, dz = z_max - z_min;
@@ -41,15 +48,15 @@ void Voronoi::compute() {
 	voro::c_loop_all loop(con);
 	voro::voronoicell cell;
 
+	WARN_PRINT("container set up");
+
 	char str[30];
 
 	if(loop.start()) do if(con.compute_cell(cell, loop)) {	
 
-			std::vector<PackedVector3Array> frag; // frag[face[vertex]]
-
 			std::vector<int> fverts;
 			std::vector<double> verts;
-			PackedVector3Array face;
+
 
 			cell.face_vertices(fverts);
 			cell.vertices(verts);
@@ -63,41 +70,38 @@ void Voronoi::compute() {
 			for (int j = 1; j < fverts.size(); j++) {
 
 				if (n == 0) {
-					frag.push_back(face.duplicate());
-					//face = PackedVector3Array();
+					frags.push_back(Vector3()); // new face
 					n = fverts[j];
+					WARN_PRINT("new face");
 
 				} else {
 					x = verts[fverts[j]*3];
 					y = verts[fverts[j]*3 + 1];
 					z = verts[fverts[j]*3 + 2];
 
+					Vector3 vec(x, y, z);
+					if (vec == Vector3(0, 0, 0)) {
+						vec = Vector3(0, 0, EPSILON);
+					}
+
 					std::sprintf(str, "%g %g %g\n", x, y, z);
 					WARN_PRINT(str);
 					// Store vertex positions into the face
-					face.push_back(Vector3(x, y, z));
+					frags.push_back(vec);
 				}
 				n--;
 			}
 
-			frags.push_back(frag);
+			frags.push_back(Vector3()); // new frag
+			WARN_PRINT("new frag");
 
      } while (loop.inc());
+
+	 dirty = false;
+	 return frags;
 	
 }
 
-PackedVector3Array Voronoi::get_face(int frag, int face) {
-	return frags[frag][face];
-} 
-
-
-int Voronoi::get_num_frags() {
-	return frags.size();
-}
-
-int Voronoi::get_num_faces(int frag_idx) {
-	return frags[frag_idx].size();
-}
 
 void Voronoi::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("setup", "min", "max"), &Voronoi::setup);
@@ -106,9 +110,6 @@ void Voronoi::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_points", "points"), &Voronoi::set_points);
 
 	ClassDB::bind_method(D_METHOD("compute"), &Voronoi::compute);
-	ClassDB::bind_method(D_METHOD("get_face", "fragment", "face"), &Voronoi::get_face);
-	ClassDB::bind_method(D_METHOD("get_num_frags"), &Voronoi::get_num_frags);
-	ClassDB::bind_method(D_METHOD("get_num_faces", "frag"), &Voronoi::get_num_faces);
 
 	ADD_PROPERTY(PropertyInfo(Variant::PACKED_VECTOR3_ARRAY, "points"), "set_points", "get_points");
 }
