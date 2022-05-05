@@ -24,6 +24,8 @@ mono_crash.*.json
 # Objects and executables
 build/
 *.o
+*.os
+*.a
 *.exe
 *.pdb
 *.obj
