@@ -30,7 +30,6 @@ PackedVector3Array Voronoi::compute() {
 	if (!dirty && frags.size() != 0) {
 		return frags;
 	}
-	WARN_PRINT("frags size checked");
 
 	int nx = 0, ny = 0, nz = 0;
 	double dx = x_max - x_min, dy = y_max - y_min, dz = z_max - z_min;
@@ -47,10 +46,6 @@ PackedVector3Array Voronoi::compute() {
 
 	voro::c_loop_all loop(con);
 	voro::voronoicell cell;
-
-	WARN_PRINT("container set up");
-
-	char str[30];
 
 	if(loop.start()) do if(con.compute_cell(cell, loop)) {	
 
@@ -72,7 +67,6 @@ PackedVector3Array Voronoi::compute() {
 				if (n == 0) {
 					frags.push_back(Vector3()); // new face
 					n = fverts[j];
-					WARN_PRINT("new face");
 
 				} else {
 					x = verts[fverts[j]*3];
@@ -84,8 +78,6 @@ PackedVector3Array Voronoi::compute() {
 						vec = Vector3(0, 0, EPSILON);
 					}
 
-					std::sprintf(str, "%g %g %g\n", x, y, z);
-					WARN_PRINT(str);
 					// Store vertex positions into the face
 					frags.push_back(vec);
 				}
@@ -93,7 +85,6 @@ PackedVector3Array Voronoi::compute() {
 			}
 
 			frags.push_back(Vector3()); // new frag
-			WARN_PRINT("new frag");
 
      } while (loop.inc());
 
