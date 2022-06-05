@@ -3,7 +3,7 @@
 
 #include "voronoi.h"
 
-void register_voronoi_types();
-void unregister_voronoi_types();
+void initialize_voronoi_module();
+void uninitialize_voronoi_module();
 
 #endif // ! EXAMPLE_REGISTER_TYPES_H
