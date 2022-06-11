@@ -14,6 +14,7 @@
 
 #include <godot_cpp/variant/vector3.hpp>
 #include <godot_cpp/variant/packed_vector3_array.hpp>
+#include <godot_cpp/variant/array.hpp>
 #include <godot_cpp/variant/utility_functions.hpp>
 
 #include <godot_cpp/core/binder_common.hpp>
@@ -41,18 +42,18 @@ private:
     double z_min;
     double z_max;
     // True if points modified since last compute()
-    bool dirty = false;
+    bool dirty = true;
 
 public:
 
-    PackedVector3Array frags;
+    Array frags;
 
     void setup(Vector3 min, Vector3 max);
     void add_point(Vector3 point);
     void set_points(PackedVector3Array array);
     PackedVector3Array get_points();
 
-    PackedVector3Array compute();
+    Array compute();
 
     Voronoi(){};
     ~Voronoi() = default;
