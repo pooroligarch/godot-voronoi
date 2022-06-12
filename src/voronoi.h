@@ -46,14 +46,18 @@ private:
 
 public:
 
-    Array frags;
+    Vector<Vector<PackedVector3Array>> frags;
 
     void setup(Vector3 min, Vector3 max);
     void add_point(Vector3 point);
     void set_points(PackedVector3Array array);
     PackedVector3Array get_points();
+    PackedVector3Array get_face(int frag_idx, int face_idx);
 
-    Array compute();
+    int get_num_frags();
+    int get_num_faces(int frag_idx);
+
+    void compute();
 
     Voronoi(){};
     ~Voronoi() = default;

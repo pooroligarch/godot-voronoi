@@ -30,14 +30,15 @@ PackedVector3Array Voronoi::get_points()
 }
 
 /** Computes the Voronoi tessellation and stores the results. */
-Array Voronoi::compute()
+void Voronoi::compute()
 {
-	if (!dirty && frags.size() != 0)
+	if (!dirty && !frags.is_empty())
 	{
-		return frags;
+		WARN_PRINT("returned cached frags");
+		return;
 	}
 
-	Array frag;
+	Vector<PackedVector3Array> frag;
 	PackedVector3Array face;
 
 	int nx = 0, ny = 0, nz = 0;
@@ -56,6 +57,10 @@ Array Voronoi::compute()
 
 	voro::c_loop_all loop(con);
 	voro::voronoicell cell;
+
+	Vector3 vec2;
+
+	char str[30];
 
 	if (loop.start())
 		do
@@ -80,6 +85,7 @@ Array Voronoi::compute()
 					if (n == 0)
 					{
 						frag.push_back(face); // new face
+						WARN_PRINT("new face");
 						n = fverts[j];
 					}
 					else
@@ -90,6 +96,10 @@ Array Voronoi::compute()
 
 						Vector3 vec(x, y, z);
 
+						
+						std::sprintf(str, "vec: %f %f %f", vec.x, vec.y, vec.z);
+						WARN_PRINT(str);
+
 						// Store vertex positions into the face
 						face.push_back(vec);
 					}
@@ -97,17 +107,40 @@ Array Voronoi::compute()
 				}
 
 				frags.push_back(frag); // new frag
+				frag.clear();
+
+				WARN_PRINT("new frag");
 			}
 		while (loop.inc());
 
+		vec2 = frags[0][0][0];
+				std::sprintf(str, "got vec: %f %f %f", vec2.x, vec2.y, vec2.z);
+				WARN_PRINT(str);
+
 	dirty = false;
-	return frags;
+}
+
+PackedVector3Array Voronoi::get_face(int frag_idx, int face_idx) {
+	return frags[frag_idx][face_idx];
+}
+
+int Voronoi::get_num_frags() {
+	return frags.size();
+}
+
+int Voronoi::get_num_faces(int frag_idx) {
+	return frags[frag_idx].size();
 }
 
 void Voronoi::_bind_methods()
 {
 	ClassDB::bind_method(D_METHOD("setup", "min", "max"), &Voronoi::setup);
 	ClassDB::bind_method(D_METHOD("add_point", "point"), &Voronoi::add_point);
+
+	ClassDB::bind_method(D_METHOD("get_face"), &Voronoi::get_face);
+	ClassDB::bind_method(D_METHOD("get_num_frags"), &Voronoi::get_num_frags);
+	ClassDB::bind_method(D_METHOD("get_num_faces", "frag_idx"), &Voronoi::get_num_faces);
+
 	ClassDB::bind_method(D_METHOD("get_points"), &Voronoi::get_points);
 	ClassDB::bind_method(D_METHOD("set_points", "points"), &Voronoi::set_points);
 
