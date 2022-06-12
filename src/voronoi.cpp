@@ -58,10 +58,6 @@ void Voronoi::compute()
 	voro::c_loop_all loop(con);
 	voro::voronoicell cell;
 
-	Vector3 vec2;
-
-	char str[30];
-
 	if (loop.start())
 		do
 			if (con.compute_cell(cell, loop))
@@ -85,7 +81,6 @@ void Voronoi::compute()
 					if (n == 0)
 					{
 						frag.push_back(face); // new face
-						WARN_PRINT("new face");
 						n = fverts[j];
 					}
 					else
@@ -96,10 +91,6 @@ void Voronoi::compute()
 
 						Vector3 vec(x, y, z);
 
-						
-						std::sprintf(str, "vec: %f %f %f", vec.x, vec.y, vec.z);
-						WARN_PRINT(str);
-
 						// Store vertex positions into the face
 						face.push_back(vec);
 					}
@@ -108,14 +99,8 @@ void Voronoi::compute()
 
 				frags.push_back(frag); // new frag
 				frag.clear();
-
-				WARN_PRINT("new frag");
 			}
 		while (loop.inc());
-
-		vec2 = frags[0][0][0];
-				std::sprintf(str, "got vec: %f %f %f", vec2.x, vec2.y, vec2.z);
-				WARN_PRINT(str);
 
 	dirty = false;
 }
